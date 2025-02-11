@@ -59,7 +59,7 @@ const [isMounted, setIsMounted] = useState(false);
     },
   });
 
-  const onSubmit = async (data: Record<string, any>) => {
+  const onSubmit = async (data: Record<string, unknown>) => {
     setIsSubmitting(true); // Disable button
     try {
       const response = await fetch("https://rfbe.vercel.app/api/v1/students/newregestration", {
