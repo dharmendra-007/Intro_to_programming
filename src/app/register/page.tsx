@@ -21,39 +21,42 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   gender: z.string().nonempty({ message: "Please select your gender." }),
-  graduationYear: z.string().nonempty({ message: "Please select your graduation year." }),
+  graduationYear: z.number({ required_error: "Please select your graduation year." }),
   email: z.string().email({ message: "Invalid email address." }),
   registrationNumber: z.string().min(6, { message: "Registration number must be at least 6 characters." }),
   branch: z.string().nonempty({ message: "Please select your branch." }),
   section: z.string().nonempty({ message: "Please select your section." }),
-  whatsappNumber: z.string().regex(/^\d{10}$/, { message: "WhatsApp number must be 10 digits." }),
+  whatsappNo: z.string().regex(/^\d{10}$/, { message: "WhatsApp number must be 10 digits." }),
   primaryDomain: z.string().nonempty({ message: "Please select your primary domain." }),
   secondaryDomain: z.string().nonempty({ message: "Please select your secondary domain." }),
 });
 
+type FormValues = z.infer<typeof formSchema>;
 export default function RegistrationForm() {
-const [isMounted, setIsMounted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false); // For disabling button
+  const [isMounted, setIsMounted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true); // Ensures the component is mounted before rendering Select options
+    setIsMounted(true);
   }, []);
 
-  const form = useForm({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       gender: "",
-      graduationYear: "",
+      graduationYear: undefined,
       email: "",
       registrationNumber: "",
       branch: "",
       section: "",
-      whatsappNumber: "",
+      whatsappNo: "",
       primaryDomain: "",
       secondaryDomain: "",
     },
@@ -72,15 +75,42 @@ const [isMounted, setIsMounted] = useState(false);
 
       if (response.ok) {
         console.log("Registration successful");
-        alert("Registration successful!");
-        form.reset(); // Reset the form
+        toast.success('Registration successful', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          });
+        form.reset();
       } else {
         console.error("Failed to register");
-        alert("Registration failed. Please try again.");
+        toast.error('Failed to register', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          });
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("An error occurred. Please try again.");
+      toast.error(`Failed to register : ${error}`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        });
     } finally {
       setIsSubmitting(false); // Re-enable button
     }
@@ -92,6 +122,18 @@ const [isMounted, setIsMounted] = useState(false);
 
   return (
     <div className="flex flex-col items-center justify-center h-[100dvh] max-h-screen bg-black">
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <div className="max-w-5xl md:w-1/2 p-6 shadow-lg rounded-lg h-auto border border-slate-200 text-white">
         <h1 className="text-3xl font-bold mb-4 text-center">Registration Form</h1>
         <Form {...form}>
@@ -104,7 +146,7 @@ const [isMounted, setIsMounted] = useState(false);
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                  <Input className="placeholder:text-white text-white" placeholder="Enter your name" {...field} />
+                    <Input className="placeholder:text-white text-white" placeholder="Enter your name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -139,11 +181,14 @@ const [isMounted, setIsMounted] = useState(false);
                 control={form.control}
                 name="graduationYear"
                 render={({ field }) => (
-                  <FormItem className="w-1/2">
+                  <FormItem className="flex-1">
                     <FormLabel>Graduation Year</FormLabel>
                     <FormControl>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <SelectTrigger>
+                      <Select
+                        onValueChange={(value: string) => field.onChange(Number(value))}
+                        value={field.value?.toString() ?? ""}
+                      >
+                        <SelectTrigger className="bg-transparent">
                           <SelectValue placeholder="Select year" />
                         </SelectTrigger>
                         <SelectContent>
@@ -259,7 +304,7 @@ const [isMounted, setIsMounted] = useState(false);
             {/* WhatsApp Number Field */}
             <FormField
               control={form.control}
-              name="whatsappNumber"
+              name="whatsappNo"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>WhatsApp Number</FormLabel>
