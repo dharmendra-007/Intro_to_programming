@@ -1,10 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; 
 import MatrixRain from "@/components/MatrixRain";
 import "./globals.css";
 import { Cobe } from "@/components/eldoraui/cobeglobe";
 
 export default function Home() {
+  const router = useRouter();
   const [timeLeft, setTimeLeft] = useState<{
     days: number;
     hours: number;
@@ -49,6 +51,12 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  const handleRegisterClick = () => {
+    if (status === "live") {
+      router.push("/register");
+    }
+  };
+
   return (
     <div className="flex flex-col bg-zinc-900 max-h-screen h-[100dvh] items-center justify-center py-12">
       <MatrixRain />
@@ -90,6 +98,7 @@ export default function Home() {
       <Cobe />
 
       <button
+      onClick={handleRegisterClick}
         className={`px-8 py-4 mt-10 text-base font-bold rounded-lg transition-all duration-300 ${status === "live"
             ? "bg-gray-800 text-white hover:bg-gradient-to-r hover:from-green-400 hover:to-blue-500 hover:scale-105 dark:bg-gray-100 dark:text-gray-800 dark:hover:from-green-300 dark:hover:to-blue-400"
             : "bg-gray-500 text-gray-300 cursor-not-allowed"
