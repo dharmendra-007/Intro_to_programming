@@ -53,11 +53,11 @@ export default function Home() {
     <div className="flex flex-col bg-zinc-900 max-h-screen h-[100dvh] items-center justify-center py-12">
       <MatrixRain />
       <div className="flex flex-col z-10">
-        <h2 className="text-center text-4xl/snug md:text-5xl font-extrabold text-black dark:text-white font-SuperchargeHalftone">
+        <h2 className="text-center text-4xl/snug md:text-5xl font-extrabold text-white font-SuperchargeHalftone">
           Introduction To Programming
         </h2>
         {status === "before" && (
-          <p className="text-center text-sm md:text-lg font-normal text-neutral-700 dark:text-neutral-200 w-[80%] md:w-[70%] mt-2 mx-auto font-mono">
+          <p className="text-center text-sm md:text-lg font-normal text-neutral-200 w-[80%] md:w-[70%] mt-2 mx-auto font-mono">
             Registration opens in:
           </p>
         )}
