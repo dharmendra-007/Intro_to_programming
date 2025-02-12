@@ -8,10 +8,10 @@ export default function MatrixRain() {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {return};
 
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    if (!ctx) {return};
 
     const columns = Math.floor(window.innerWidth / 20);
     const drops: number[] = Array(columns).fill(0);
@@ -49,5 +49,5 @@ export default function MatrixRain() {
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />;
+  return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full max-h-screen" />;
 }

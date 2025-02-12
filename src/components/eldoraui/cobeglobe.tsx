@@ -1,9 +1,11 @@
 /* eslint-disable */
 "use client";
+import { useMediaQuery } from 'usehooks-ts'
 import createGlobe from "cobe";
 import { useEffect, useRef } from "react";
 
 export function Cobe() {
+  const matches = useMediaQuery('(min-width: 768px)')
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -62,13 +64,18 @@ export function Cobe() {
       style={{
         display: "flex",
         width: "100%",
-        maxWidth: 500,
+        maxWidth: `${matches ? 500 : 300}px`,
         aspectRatio: "1",
         margin: "auto",
         position: "relative",
         padding: "auto",
         placeItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
+        ...{
+          "@media (minwidth: 768px)": {
+            maxWidth: 500, // For medium devices and above
+          },
+        }
       }}
     >
       <canvas

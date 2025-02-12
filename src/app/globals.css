@@ -7,6 +7,10 @@
     font-family: 'SuperchargeHalftone';
     src: url('/fonts/SuperchargeHalftone.otf') format('opentype');
   }
+  @font-face {
+    font-family: 'life-style-regular';
+    src: url('/fonts/life-style.regular.otf') format('opentype');
+  }
   :root {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
