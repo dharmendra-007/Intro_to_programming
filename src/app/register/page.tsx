@@ -238,12 +238,12 @@ export default function RegistrationForm() {
             />
 
             {/* Branch and Section Fields */}
-            <div className="flex flex-row gap-6">
+            <div className="">
               <FormField
                 control={form.control}
                 name="branch"
                 render={({ field }) => (
-                  <FormItem className="w-1/2">
+                  <FormItem className="">
                     <FormLabel>Branch</FormLabel>
                     <FormControl>
                       <Select onValueChange={field.onChange} value={field.value}>
@@ -273,7 +273,7 @@ export default function RegistrationForm() {
                 control={form.control}
                 name="section"
                 render={({ field }) => (
-                  <FormItem className="w-1/2">
+                  <FormItem className="">
                     <FormLabel>Section</FormLabel>
                     <FormControl>
                       <Select onValueChange={field.onChange} value={field.value}>
