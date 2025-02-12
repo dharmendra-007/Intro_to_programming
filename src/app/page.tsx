@@ -52,7 +52,7 @@ export default function Home() {
   }, []);
 
   const handleRegisterClick = () => {
-    if (status === "live") {
+    if (status !== "live") {
       router.push("/register");
     }
   };
@@ -97,16 +97,17 @@ export default function Home() {
 
       <Cobe />
 
-      <button
-      onClick={handleRegisterClick}
-        className={`px-8 py-4 mt-10 text-base font-bold rounded-lg transition-all duration-300 ${status === "live"
-            ? "bg-gray-800 text-white hover:bg-gradient-to-r hover:from-green-400 hover:to-blue-500 hover:scale-105 dark:bg-gray-100 dark:text-gray-800 dark:hover:from-green-300 dark:hover:to-blue-400"
-            : "bg-gray-500 text-gray-300 cursor-not-allowed"
-          } z-10 shadow-md`}
-        disabled={status !== "live"}
-      >
-        Register Now →
-      </button>
+<button
+  onClick={handleRegisterClick}
+  className={`px-8 py-4 mt-10 text-base font-bold rounded-lg transition-all duration-300 transform ${status !== "live"
+    ? "bg-white text-black hover:bg-gray-200 hover:scale-105 hover:shadow-lg"
+    : "bg-gray-500 text-gray-300 cursor-not-allowed"
+    } z-10 shadow-md`}
+  disabled={status === "live"}
+>
+  Register Now →
+</button>
+
     </div>
   );
 }
