@@ -73,8 +73,9 @@ export default function RegistrationForm() {
         body: JSON.stringify(data),
       });
 
+      const result = await response.json();
+
       if (response.ok) {
-        console.log("Registration successful");
         toast.success('Registration successful', {
           position: "top-right",
           autoClose: 5000,
@@ -87,8 +88,7 @@ export default function RegistrationForm() {
           });
         form.reset();
       } else {
-        console.error("Failed to register");
-        toast.error('Failed to register', {
+        toast.error(`Failed to register : ${result.message}`, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -100,7 +100,6 @@ export default function RegistrationForm() {
           });
       }
     } catch (error) {
-      console.error("Error:", error);
       toast.error(`Failed to register : ${error}`, {
         position: "top-right",
         autoClose: 5000,
