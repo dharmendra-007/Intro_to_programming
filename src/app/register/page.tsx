@@ -238,7 +238,6 @@ export default function RegistrationForm() {
             />
 
             {/* Branch and Section Fields */}
-            <div className="">
               <FormField
                 control={form.control}
                 name="branch"
@@ -302,7 +301,6 @@ export default function RegistrationForm() {
                   </FormItem>
                 )}
               />
-            </div>
 
             {/* WhatsApp Number Field */}
             <FormField
