@@ -1,12 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; 
+import { useEffect, useState } from "react"; 
 import MatrixRain from "@/components/MatrixRain";
 import "./globals.css";
 import { Cobe } from "@/components/eldoraui/cobeglobe";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function Home() {
-  const router = useRouter();
   const [timeLeft, setTimeLeft] = useState<{
     days: number;
     hours: number;
@@ -19,7 +19,6 @@ export default function Home() {
   useEffect(() => {
     const startDate = new Date("Feb 13, 2025 17:00:00").getTime();
     const endDate = new Date("Feb 18, 2025 23:59:59").getTime();
-
     const interval = setInterval(() => {
       const now = new Date().getTime();
 
@@ -51,17 +50,12 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleRegisterClick = () => {
-    if (status !== "live") {
-      router.push("/register");
-    }
-  };
-
   return (
-    <div className="flex flex-col bg-zinc-900 max-h-screen h-[100dvh] items-center justify-center py-12">
+    <div className="flex flex-col bg-zinc-900 max-h-screen h-[100dvh] items-center justify-center py-6 relative">
+      <Image src='/images/Enigma.png' height={80} width={80} alt="logo" className="absolute sm:top-8 sm:left-8 max-sm:hidden z-10"/>
       <MatrixRain />
       <div className="flex flex-col z-10">
-        <h2 className="text-center text-4xl/snug md:text-5xl font-extrabold text-white font-SuperchargeHalftone">
+        <h2 className="text-center text-4xl md:text-5xl lg:text-7xl font-extrabold text-white font-life-style-regular">
           Introduction To Programming
         </h2>
         {status === "before" && (
@@ -86,7 +80,7 @@ export default function Home() {
         <div className="flex flex-row gap-8 mt-8 z-10">
           {["days", "hours", "minutes", "seconds"].map((unit) => (
             <div key={unit} className="flex flex-col items-center">
-              <span className="text-6xl font-bold text-gray-300">
+              <span className="text-2xl md:text-6xl font-bold text-gray-300">
                 {timeLeft[unit as keyof typeof timeLeft]}
               </span>
               <span className="text-sm text-neutral-400 uppercase">{unit}</span>
@@ -97,16 +91,23 @@ export default function Home() {
 
       <Cobe />
 
-<button
-  onClick={handleRegisterClick}
-  className={`px-8 py-4 mt-10 text-base font-bold rounded-lg transition-all duration-300 transform ${status !== "live"
-    ? "bg-white text-black hover:bg-gray-200 hover:scale-105 hover:shadow-lg"
-    : "bg-gray-500 text-gray-300 cursor-not-allowed"
-    } z-10 shadow-md`}
-  disabled={status === "live"}
+      <Link
+  href={status === "live" ? "/register" : '/'}
+  onClick={(e) => {
+    if (status !== "live") {
+      e.preventDefault();
+    }
+  }}
+  className={`px-9 py-3 text-lg font-bold rounded-full transition-transform duration-300 z-10 shadow-md ${
+    status === "live"
+      ? "bg-green-500 text-white hover:bg-green-600 hover:scale-105 hover:shadow-lg active:translate-y-1 active:border-blue-500"
+      : "bg-gray-400 text-gray-200 border-gray-500 cursor-not-allowed"
+  }`}
 >
-  Register Now →
-</button>
+  Register Now
+</Link>
+
+
 
     </div>
   );

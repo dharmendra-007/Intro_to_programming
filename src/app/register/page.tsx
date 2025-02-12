@@ -23,13 +23,15 @@ import {
 } from "@/components/ui/select";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { CgSpinner } from "react-icons/cg";
+import Image from "next/image";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   gender: z.string().nonempty({ message: "Please select your gender." }),
   graduationYear: z.number({ required_error: "Please select your graduation year." }),
   email: z.string().email({ message: "Invalid email address." }),
-  registrationNumber: z.string().min(6, { message: "Registration number must be at least 6 characters." }),
+  registrationNumber: z.string().regex(/^\d{10}$/, { message: "Registration number must be 10 digits." }),
   branch: z.string().nonempty({ message: "Please select your branch." }),
   section: z.string().nonempty({ message: "Please select your section." }),
   whatsappNo: z.string().regex(/^\d{10}$/, { message: "WhatsApp number must be 10 digits." }),
@@ -120,7 +122,7 @@ export default function RegistrationForm() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-[100dvh] max-h-screen bg-black">
+    <div className="flex flex-col items-center justify-center h-auto bg-black relative overflow-x-hidden">
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -133,8 +135,10 @@ export default function RegistrationForm() {
         pauseOnHover
         theme="dark"
       />
-      <div className="max-w-5xl md:w-1/2 p-6 shadow-lg rounded-lg h-auto border border-slate-200 text-white">
-        <h1 className="text-3xl font-bold mb-4 text-center">Registration Form</h1>
+      <Image src='/images/Enigma.png' height={80} width={80} alt="logo" className="absolute sm:top-8 sm:left-8 max-sm:hidden z-10"/>
+      <div className="max-w-5xl md:w-1/3 p-6 shadow-lg rounded-lg h-auto border border-slate-200 text-white m-6">
+      <Image src='/images/Enigma.png' height={50} width={50} alt="logo" className="mx-auto sm:hidden"/>
+        <h1 className="text-3xl font-bold mb-4 text-center font-life-style-regular">Registration Form</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {/* Name Field */}
@@ -145,7 +149,7 @@ export default function RegistrationForm() {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input className="placeholder:text-white text-white" placeholder="Enter your name" {...field} />
+                    <Input className="placeholder:text-white text-white p-6" placeholder="Enter your name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -162,7 +166,7 @@ export default function RegistrationForm() {
                     <FormLabel>Gender</FormLabel>
                     <FormControl>
                       <Select onValueChange={field.onChange} value={field.value}>
-                        <SelectTrigger>
+                        <SelectTrigger className="p-6">
                           <SelectValue placeholder="Select gender" />
                         </SelectTrigger>
                         <SelectContent>
@@ -187,7 +191,7 @@ export default function RegistrationForm() {
                         onValueChange={(value: string) => field.onChange(Number(value))}
                         value={field.value?.toString() ?? ""}
                       >
-                        <SelectTrigger className="bg-transparent">
+                        <SelectTrigger className="bg-transparent p-6">
                           <SelectValue placeholder="Select year" />
                         </SelectTrigger>
                         <SelectContent>
@@ -211,7 +215,7 @@ export default function RegistrationForm() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input className="placeholder:text-white text-white" placeholder="Enter your email" type="email" {...field} />
+                    <Input className="placeholder:text-white text-white p-6" placeholder="Enter your email" type="email" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -226,7 +230,7 @@ export default function RegistrationForm() {
                 <FormItem>
                   <FormLabel>Registration Number</FormLabel>
                   <FormControl>
-                    <Input className="placeholder:text-white text-white" placeholder="Enter your registration number" {...field} />
+                    <Input className="placeholder:text-white text-white p-6" placeholder="Enter your registration number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -243,7 +247,7 @@ export default function RegistrationForm() {
                     <FormLabel>Branch</FormLabel>
                     <FormControl>
                       <Select onValueChange={field.onChange} value={field.value}>
-                        <SelectTrigger>
+                        <SelectTrigger className="p-6">
                           <SelectValue placeholder="Select branch" />
                         </SelectTrigger>
                         <SelectContent>
@@ -273,7 +277,7 @@ export default function RegistrationForm() {
                     <FormLabel>Section</FormLabel>
                     <FormControl>
                       <Select onValueChange={field.onChange} value={field.value}>
-                        <SelectTrigger>
+                        <SelectTrigger className="p-6">
                           <SelectValue placeholder="Select section" />
                         </SelectTrigger>
                         <SelectContent>
@@ -308,7 +312,7 @@ export default function RegistrationForm() {
                 <FormItem>
                   <FormLabel>WhatsApp Number</FormLabel>
                   <FormControl>
-                    <Input className="placeholder:text-white text-white" placeholder="Enter your WhatsApp number" {...field} />
+                    <Input className="placeholder:text-white text-white p-6" placeholder="Enter your WhatsApp number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -325,7 +329,7 @@ export default function RegistrationForm() {
                     <FormLabel>Primary Domain</FormLabel>
                     <FormControl>
                       <Select onValueChange={field.onChange} value={field.value}>
-                        <SelectTrigger>
+                        <SelectTrigger className="p-6">
                           <SelectValue placeholder="Primary domain" />
                         </SelectTrigger>
                         <SelectContent>
@@ -353,7 +357,7 @@ export default function RegistrationForm() {
                     <FormLabel>Secondary Domain</FormLabel>
                     <FormControl>
                       <Select onValueChange={field.onChange} value={field.value}>
-                        <SelectTrigger>
+                        <SelectTrigger className="p-6">
                           <SelectValue placeholder="Secondary domain" />
                         </SelectTrigger>
                         <SelectContent>
@@ -376,7 +380,7 @@ export default function RegistrationForm() {
             </div>
 
             <Button type="submit" disabled={isSubmitting} className="w-full bg-green-600 hover:bg-green-700">
-              {isSubmitting ? "Registering..." : "Register"}
+              {isSubmitting ? <CgSpinner className="animate-spin"/> : "Register"}
             </Button>
           </form>
         </Form>

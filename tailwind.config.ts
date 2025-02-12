@@ -55,7 +55,11 @@ export default {
     			SuperchargeHalftone: [
     				'SuperchargeHalftone',
     				'sans-serif'
-    			]
+    			],
+    			"life-style-regular": [
+    				'life-style-regular',
+    				'sans-serif'
+    			],
     		},
     		borderRadius: {
     			lg: 'var(--radius)',
