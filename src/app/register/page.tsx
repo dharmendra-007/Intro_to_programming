@@ -60,7 +60,8 @@ const DOMAINS = [
   "Cloud Computing",
   "UI/UX",
   "Blender",
-  "Video Editing"
+  "Video Editing",
+  "GD"
 ];
 
 const formSchema = z.object({
