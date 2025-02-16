@@ -61,7 +61,8 @@ const DOMAINS = [
   "UI/UX",
   "Blender",
   "Video Editing",
-  "GD"
+  "GD",
+  "Content Writing"
 ];
 
 const formSchema = z.object({
