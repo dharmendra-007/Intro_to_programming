@@ -186,7 +186,7 @@ export default function RegistrationForm() {
         theme="dark"
       />
       <Image src='/images/Enigma.png' height={80} width={80} alt="logo" className="absolute sm:top-8 sm:left-8 max-sm:hidden z-10 cursor-pointer" onClick={() => (location.href = '/')} />
-      <div className="w-full max-w-5xl md:w-2/3 lg:w-1/2 xl:w-1/3 p-6 shadow-lg rounded-lg h-auto border border-slate-200 text-white m-6">
+      <div className="w-full max-w-5xl md:w-2/3 lg:w-1/2 xl:w-1/3 p-2 md:p-6 shadow-lg rounded-lg h-auto border border-slate-200 text-white m-6">
         <Image src='/images/Enigma.png' height={50} width={50} alt="logo" className="mx-auto sm:hidden"/>
         <h1 className="text-3xl font-bold mb-4 text-center font-life-style-regular">Registration Form</h1>
         <Form {...form}>
@@ -392,7 +392,7 @@ export default function RegistrationForm() {
                     <FormLabel>Secondary Domain</FormLabel>
                     <FormControl>
                       <Select onValueChange={field.onChange} value={field.value}>
-                        <SelectTrigger className="p-6">
+                        <SelectTrigger className="py-6">
                           <SelectValue placeholder="Secondary domain" />
                         </SelectTrigger>
                         <SelectContent>
