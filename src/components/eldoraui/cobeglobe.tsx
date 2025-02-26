@@ -64,9 +64,9 @@ export function Cobe() {
       style={{
         display: "flex",
         width: "100%",
-        maxWidth: `${matches ? 500 : 300}px`,
+        maxWidth: `${matches ? 520 : 300}px`,
         aspectRatio: "1",
-        margin: "auto",
+        // margin: "auto",
         position: "relative",
         padding: "auto",
         placeItems: "center",
@@ -81,8 +81,8 @@ export function Cobe() {
       <canvas
         ref={canvasRef}
         style={{
-          width: "90%",
-          height: "90%",
+          width: "100%",
+          height: "100%",
           contain: "layout paint size",
           opacity: 0,
           transition: "opacity 1s ease",

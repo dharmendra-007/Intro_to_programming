@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Form,
   FormControl,
@@ -13,6 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -24,22 +27,21 @@ import {
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { CgSpinner } from "react-icons/cg";
+import { MessageCircleCode } from 'lucide-react';
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-// Form Options
 const GENDER_OPTIONS = [
   { value: "male", label: "Male" },
   { value: "female", label: "Female" },
   { value: "prefer not to say", label: "Prefer not to say" }
 ];
 
-const GRADUATION_YEARS = [2028, 2027, 2026];
-
 const BRANCHES = [
   "Chemical Engineering",
   "Civil Engineering",
   "Computer Science and Engineering",
-  "CS AI/ML",
   "Electrical Engineering",
   "Electrical and Electronics Engineering",
   "Electronics and Telecommunication Engineering",
@@ -56,6 +58,7 @@ const DOMAINS = [
   "App Dev",
   "Game Dev",
   "AI/ML",
+  "Competitive Programming",
   "Cyber Security",
   "Cloud Computing",
   "UI/UX",
@@ -65,17 +68,24 @@ const DOMAINS = [
   "Content Writing"
 ];
 
+// Form schema
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   gender: z.string().nonempty({ message: "Please select your gender." }),
-  graduationYear: z.number({ required_error: "Please select your graduation year." }),
   email: z.string().email({ message: "Invalid email address." }),
   registrationNumber: z.string().regex(/^\d{10}$/, { message: "Registration number must be 10 digits." }),
   branch: z.string().nonempty({ message: "Please select your branch." }),
-  section: z.string().nonempty({ message: "Please select your section." }),
+  section: z.string().optional().or(z.literal("")),
   whatsappNo: z.string().regex(/^\d{10}$/, { message: "WhatsApp number must be 10 digits." }),
   primaryDomain: z.string().nonempty({ message: "Please select your primary domain." }),
   secondaryDomain: z.string().nonempty({ message: "Please select your secondary domain." }),
+  githubUrl: z.string().regex(
+    /^https?:\/\/(www\.)?github\.com(\/[a-zA-Z0-9_-]+(\/[a-zA-Z0-9._-]+\/?)?)?\/?$/,
+    { message: "Invalid GitHub URL." }
+  ),
+  projectLink1: z.string().url({ message: "Invalid project link." }).optional().or(z.literal("")),
+  projectLink2: z.string().url({ message: "Invalid project link." }).optional().or(z.literal("")),
+  resumeLink: z.string().url({ message: "Invalid Url" }).optional().or(z.literal("")),
 }).refine((data) => data.primaryDomain !== data.secondaryDomain, {
   message: "Primary and secondary domains must be different",
   path: ["secondaryDomain"],
@@ -84,6 +94,8 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function RegistrationForm() {
+  const router = useRouter();
+
   const [isMounted, setIsMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [availableSecondaryDomains, setAvailableSecondaryDomains] = useState(DOMAINS);
@@ -92,12 +104,12 @@ export default function RegistrationForm() {
     setIsMounted(true);
   }, []);
 
+  // Default values
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       gender: "",
-      graduationYear: undefined,
       email: "",
       registrationNumber: "",
       branch: "",
@@ -105,7 +117,12 @@ export default function RegistrationForm() {
       whatsappNo: "",
       primaryDomain: "",
       secondaryDomain: "",
+      githubUrl: "",
+      projectLink1: "",
+      projectLink2: "",
+      resumeLink: "",
     },
+    mode: "onBlur",
   });
 
   const handlePrimaryDomainChange = (value: string) => {
@@ -115,14 +132,32 @@ export default function RegistrationForm() {
   };
 
   const onSubmit = async (data: FormValues) => {
+    // email in lowercase
+    const formattedData = {
+      ...data,
+      name: data.name.trim(),
+      email: data.email.toLowerCase(),
+    };
+
+    console.log(formattedData)
+
     setIsSubmitting(true);
+
     try {
-      const response = await fetch("https://rfbe.vercel.app/api/v1/students/newregestration", {
+      const formData = new FormData();
+
+      Object.entries(formattedData).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+          formData.append(key, value as string);
+        }
+      });
+
+      const response = await fetch("https://itp-secondyear.vercel.app/api/v1/students/newregestration", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(formattedData),
       });
 
       const result = await response.json();
@@ -132,7 +167,7 @@ export default function RegistrationForm() {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
-          closeOnClick: false,
+          closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
@@ -140,12 +175,13 @@ export default function RegistrationForm() {
         });
         form.reset();
         setAvailableSecondaryDomains(DOMAINS);
+        router.push("https://chat.whatsapp.com/Ey8JkhYMswpLYr5PKpkV1I");
       } else {
-        toast.error(`Failed to register: ${result.message}`, {
+        toast.error(`Failed to register: ${result.message || 'Unknown error'}`, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
-          closeOnClick: false,
+          closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
@@ -153,11 +189,11 @@ export default function RegistrationForm() {
         });
       }
     } catch (error) {
-      toast.error(`Failed to register: ${error}`, {
+      toast.error(`Failed to register: ${error instanceof Error ? error.message : 'Unknown error'}`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
-        closeOnClick: false,
+        closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
@@ -186,9 +222,10 @@ export default function RegistrationForm() {
         pauseOnHover
         theme="dark"
       />
+
       <Image src='/images/Enigma.png' height={80} width={80} alt="logo" className="absolute sm:top-8 sm:left-8 max-sm:hidden z-10 cursor-pointer" onClick={() => (location.href = '/')} />
-      <div className="w-full max-w-5xl md:w-2/3 lg:w-1/2 xl:w-1/3 p-2 md:p-6 shadow-lg rounded-lg h-auto border border-slate-200 text-white m-6">
-        <Image src='/images/Enigma.png' height={50} width={50} alt="logo" className="mx-auto sm:hidden"/>
+      <div className="w-[95%] max-w-5xl md:w-2/3 lg:w-1/2 xl:w-1/3 p-2 md:p-6 shadow-lg rounded-lg h-auto border border-slate-200 text-white my-6">
+        <Image src='/images/Enigma.png' height={50} width={50} alt="logo" className="mx-auto sm:hidden" />
         <h1 className="text-3xl font-bold mb-4 text-center font-life-style-regular">Registration Form</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -207,60 +244,31 @@ export default function RegistrationForm() {
               )}
             />
 
-            {/* Gender and Graduation Year Fields */}
-            <div className="flex flex-row gap-6">
-              <FormField
-                control={form.control}
-                name="gender"
-                render={({ field }) => (
-                  <FormItem className="w-1/2">
-                    <FormLabel>Gender</FormLabel>
-                    <FormControl>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <SelectTrigger className="p-6">
-                          <SelectValue placeholder="Select gender" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {GENDER_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="graduationYear"
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel>Graduation Year</FormLabel>
-                    <FormControl>
-                      <Select
-                        onValueChange={(value: string) => field.onChange(Number(value))}
-                        value={field.value?.toString() ?? ""}
-                      >
-                        <SelectTrigger className="bg-transparent p-6">
-                          <SelectValue placeholder="Select year" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {GRADUATION_YEARS.map((year) => (
-                            <SelectItem key={year} value={year.toString()}>
-                              {year}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            {/* Gender Field */}
+            <FormField
+              control={form.control}
+              name="gender"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Gender</FormLabel>
+                  <FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className="p-6">
+                        <SelectValue placeholder="Select gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {GENDER_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* Email Field */}
             <FormField
@@ -360,12 +368,12 @@ export default function RegistrationForm() {
             />
 
             {/* Primary and Secondary Domain Fields */}
-            <div className="flex flex-row gap-6">
+            <div className="flex flex-row justify-between">
               <FormField
                 control={form.control}
                 name="primaryDomain"
                 render={({ field }) => (
-                  <FormItem className="w-1/2">
+                  <FormItem className="w-[48%]">
                     <FormLabel>Primary Domain</FormLabel>
                     <FormControl>
                       <Select onValueChange={handlePrimaryDomainChange} value={field.value}>
@@ -389,7 +397,7 @@ export default function RegistrationForm() {
                 control={form.control}
                 name="secondaryDomain"
                 render={({ field }) => (
-                  <FormItem className="w-1/2">
+                  <FormItem className="w-[48%]">
                     <FormLabel>Secondary Domain</FormLabel>
                     <FormControl>
                       <Select onValueChange={field.onChange} value={field.value}>
@@ -411,9 +419,66 @@ export default function RegistrationForm() {
               />
             </div>
 
-            <Button type="submit" disabled={isSubmitting} className="w-full bg-green-600 hover:bg-green-700">
-              {isSubmitting ? <CgSpinner className="animate-spin"/> : "Register"}
-            </Button>
+            {/* GitHub URL Field */}
+            <FormField
+              control={form.control}
+              name="githubUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Github URL</FormLabel>
+                  <FormControl>
+                    <Input className="placeholder:text-white text-white p-6" placeholder="Enter your Github URL" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Project Links */}
+            <FormField
+              control={form.control}
+              name="projectLink1"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project Link 1 (optional)</FormLabel>
+                  <FormControl>
+                    <Input className="placeholder:text-white text-white p-6" placeholder="Enter your Project Link" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="projectLink2"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project Link 2 (optional)</FormLabel>
+                  <FormControl>
+                    <Input className="placeholder:text-white text-white p-6" placeholder="Enter your Project Link" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="resumeLink"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Resume Link (optional)</FormLabel>
+                  <FormControl>
+                    <Input className="placeholder:text-white text-white p-6" placeholder="Enter your Resume Link" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+              <Button type="submit" disabled={isSubmitting} className="w-full bg-green-600 hover:bg-green-700">
+                {isSubmitting ? <CgSpinner className="animate-spin" /> : "Register"}
+              </Button>
           </form>
         </Form>
       </div>
