@@ -18,7 +18,7 @@ export default function Home() {
 
   useEffect(() => {
     const startDate = new Date("Feb 13, 2025 17:00:00").getTime();
-    const endDate = new Date("Feb 18, 2025 23:59:59").getTime();
+    const endDate = new Date("27 Feb , 2025 23:59:59").getTime();
     const interval = setInterval(() => {
       const now = new Date().getTime();
 
@@ -51,15 +51,20 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col bg-zinc-900 max-h-screen h-[100dvh] items-center justify-center py-6 relative">
+    <div className="flex flex-col bg-zinc-900 max-h-screen h-[100dvh] items-center justify-between py-6 relative">
       <Image src='/images/Enigma.png' height={80} width={80} alt="logo" className="absolute sm:top-8 sm:left-8 max-sm:hidden z-10"/>
       <MatrixRain />
       <div className="flex flex-col z-10">
-        <h2 className="text-center text-4xl md:text-5xl lg:text-7xl font-extrabold text-white font-life-style-regular">
-          Introduction To Programming
+        <h2 className="text-center text-4xl md:text-5xl lg:text-7xl font-extrabold text-white font-life-style-regular md:my-3">
+          {/* Introduction To Programming */}
+          Induction 2.0
         </h2>
+        <h5 className="text-center text-xs md:text-sm lg:text-lg font-medium text-white">
+          {/* Introduction To Programming */}
+          (For Second Year Students Only)
+        </h5>
         {status === "before" && (
-          <p className="text-center text-sm md:text-lg font-normal text-neutral-200 w-[80%] md:w-[70%] mt-2 mx-auto font-mono">
+          <p className="text-center text-sm md:text-lg font-normal text-neutral-200 w-[80%] md:w-[70%] mt-2 mx-auto font-mono ">
             Registration opens in:
           </p>
         )}
@@ -69,18 +74,15 @@ export default function Home() {
           </p>
         )}
         {status === "ended" && (
-          <p className="text-center text-sm md:text-lg font-normal text-red-600 w-[80%] md:w-[70%] mt-2 mx-auto font-mono">
+          <p className="text-center text-sm md:text-lg font-semibold text-red-600 w-[80%] md:w-[70%] mt-3 mx-auto font-mono">
             Registration has ended. Thank you for your interest.
           </p>
         )}
-      </div>
-
-      {/* Countdown Timer */}
       {timeLeft && (
-        <div className="flex flex-row gap-8 mt-8 z-10">
+        <div className="flex flex-row gap-8 mt-4 z-10 mx-auto">
           {["days", "hours", "minutes", "seconds"].map((unit) => (
             <div key={unit} className="flex flex-col items-center">
-              <span className="text-2xl md:text-6xl font-bold text-gray-300">
+              <span className="text-xl md:text-5xl font-bold text-gray-300">
                 {timeLeft[unit as keyof typeof timeLeft]}
               </span>
               <span className="text-sm text-neutral-400 uppercase">{unit}</span>
@@ -88,6 +90,9 @@ export default function Home() {
           ))}
         </div>
       )}
+      </div>
+
+      {/* Countdown Timer */}
 
       <Cobe />
 
