@@ -5,7 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Upload } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Form,
   FormControl,
@@ -26,7 +27,10 @@ import {
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { CgSpinner } from "react-icons/cg";
+import { MessageCircleCode } from 'lucide-react';
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const GENDER_OPTIONS = [
   { value: "male", label: "Male" },
@@ -81,6 +85,7 @@ const formSchema = z.object({
   ),
   projectLink1: z.string().url({ message: "Invalid project link." }).optional().or(z.literal("")),
   projectLink2: z.string().url({ message: "Invalid project link." }).optional().or(z.literal("")),
+  resumeLink: z.string().url({ message: "Invalid Url" }).optional().or(z.literal("")),
 }).refine((data) => data.primaryDomain !== data.secondaryDomain, {
   message: "Primary and secondary domains must be different",
   path: ["secondaryDomain"],
@@ -89,30 +94,11 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function RegistrationForm() {
+  const router = useRouter();
+
   const [isMounted, setIsMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [availableSecondaryDomains, setAvailableSecondaryDomains] = useState(DOMAINS);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [resumeFile, setResumeFile] = useState<File | null>(null);
-  const [resumeError, setResumeError] = useState<string | null>(null);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files.length > 0) {
-      const file = event.target.files[0];
-      
-      if (file.type !== "application/pdf") {
-        setResumeError("Only PDF files are allowed.");
-        setFileName(null);
-        setResumeFile(null);
-        return;
-      }
-      
-      setFileName(file.name);
-      setResumeFile(file);
-      setResumeError(null);
-    }
-  };
 
   useEffect(() => {
     setIsMounted(true);
@@ -134,6 +120,7 @@ export default function RegistrationForm() {
       githubUrl: "",
       projectLink1: "",
       projectLink2: "",
+      resumeLink: "",
     },
     mode: "onBlur",
   });
@@ -145,30 +132,32 @@ export default function RegistrationForm() {
   };
 
   const onSubmit = async (data: FormValues) => {
-    // Convert email to lowercase
+    // email in lowercase
     const formattedData = {
       ...data,
+      name: data.name.trim(),
       email: data.email.toLowerCase(),
     };
-    
+
+    console.log(formattedData)
+
     setIsSubmitting(true);
-    
+
     try {
       const formData = new FormData();
-      
+
       Object.entries(formattedData).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== "") {
           formData.append(key, value as string);
         }
       });
-      
-      if (resumeFile) {
-        formData.append("resume", resumeFile);
-      }
-      
-      const response = await fetch("https://rfbe.vercel.app/api/v1/students/newregestration", {
+
+      const response = await fetch("https://itp-secondyear.vercel.app/api/v1/students/newregestration", {
         method: "POST",
-        body: formData, // Send as FormData instead of JSON
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formattedData),
       });
 
       const result = await response.json();
@@ -186,8 +175,7 @@ export default function RegistrationForm() {
         });
         form.reset();
         setAvailableSecondaryDomains(DOMAINS);
-        setFileName(null);
-        setResumeFile(null);
+        router.push("https://chat.whatsapp.com/Ey8JkhYMswpLYr5PKpkV1I");
       } else {
         toast.error(`Failed to register: ${result.message || 'Unknown error'}`, {
           position: "top-right",
@@ -474,41 +462,23 @@ export default function RegistrationForm() {
               )}
             />
 
-            {/* Resume Upload Field - Now Optional */}
-            <div className="grid w-full items-center gap-3">
-              <Label htmlFor="resume">Upload Resume (PDF only, optional)</Label>
+            <FormField
+              control={form.control}
+              name="resumeLink"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Resume Link (optional)</FormLabel>
+                  <FormControl>
+                    <Input className="placeholder:text-white text-white p-6" placeholder="Enter your Resume Link" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              {/* Hidden File Input with ARIA Label */}
-              <input
-                ref={fileInputRef}
-                id="resume"
-                type="file"
-                accept="application/pdf"
-                className="hidden"
-                onChange={handleFileChange}
-                aria-label="Upload your resume (optional)"
-                title="Upload Resume (optional)"
-              />
-
-              {/* Clickable Button with Icon */}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-2 px-4 py-2 text-white bg-black rounded-lg"
-              >
-                <Upload size={20} />
-                <span>Choose File (optional)</span>
+              <Button type="submit" disabled={isSubmitting} className="w-full bg-green-600 hover:bg-green-700">
+                {isSubmitting ? <CgSpinner className="animate-spin" /> : "Register"}
               </Button>
-
-              {/* Display selected file name or error */}
-              {fileName && <p className="text-sm text-gray-400">{fileName}</p>}
-              {resumeError && <p className="text-sm text-red-500">{resumeError}</p>}
-            </div>
-
-            <Button type="submit" disabled={isSubmitting} className="w-full bg-green-600 hover:bg-green-700">
-              {isSubmitting ? <CgSpinner className="animate-spin" /> : "Register"}
-            </Button>
           </form>
         </Form>
       </div>
