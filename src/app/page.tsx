@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react"; 
+import { useEffect, useState } from "react";
 import MatrixRain from "@/components/MatrixRain";
 import "./globals.css";
 import { Cobe } from "@/components/eldoraui/cobeglobe";
@@ -17,8 +17,11 @@ export default function Home() {
   const [status, setStatus] = useState<"before" | "live" | "ended">("before");
 
   useEffect(() => {
-    const startDate = new Date("Feb 13, 2025 17:00:00").getTime();
-    const endDate = new Date("27 Feb , 2025 23:59:59").getTime();
+    // const startDate = new Date("2025-02-13T17:00:00Z").getTime();
+    // const endDate = new Date("2025-02-27T23:59:59Z").getTime();
+    const startDate = new Date(Date.UTC(2025, 1, 13, 11, 30, 0)).getTime(); // 17:00 IST (UTC+5:30)
+    const endDate = new Date(Date.UTC(2025, 1, 28, 17, 29, 59)).getTime(); // 23:59:59 IST (UTC+5:30)
+
     const interval = setInterval(() => {
       const now = new Date().getTime();
 
@@ -52,7 +55,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col bg-zinc-900 max-h-screen h-[100dvh] items-center justify-between py-6 relative">
-      <Image src='/images/Enigma.png' height={80} width={80} alt="logo" className="absolute sm:top-8 sm:left-8 max-sm:hidden z-10"/>
+      <Image src='/images/Enigma.png' height={80} width={80} alt="logo" className="absolute sm:top-8 sm:left-8 max-sm:hidden z-10" />
       <MatrixRain />
       <div className="flex flex-col z-10">
         <h2 className="text-center text-4xl md:text-5xl lg:text-7xl font-extrabold text-white font-life-style-regular md:my-3">
@@ -78,18 +81,18 @@ export default function Home() {
             Registration has ended. Thank you for your interest.
           </p>
         )}
-      {timeLeft && (
-        <div className="flex flex-row gap-8 mt-4 z-10 mx-auto">
-          {["days", "hours", "minutes", "seconds"].map((unit) => (
-            <div key={unit} className="flex flex-col items-center">
-              <span className="text-xl md:text-5xl font-bold text-gray-300">
-                {timeLeft[unit as keyof typeof timeLeft]}
-              </span>
-              <span className="text-sm text-neutral-400 uppercase">{unit}</span>
-            </div>
-          ))}
-        </div>
-      )}
+        {timeLeft && (
+          <div className="flex flex-row gap-8 mt-4 z-10 mx-auto">
+            {["days", "hours", "minutes", "seconds"].map((unit) => (
+              <div key={unit} className="flex flex-col items-center">
+                <span className="text-xl md:text-5xl font-bold text-gray-300">
+                  {timeLeft[unit as keyof typeof timeLeft]}
+                </span>
+                <span className="text-sm text-neutral-400 uppercase">{unit}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Countdown Timer */}
@@ -97,20 +100,19 @@ export default function Home() {
       <Cobe />
 
       <Link
-  href={status === "live" ? "/register" : '/'}
-  onClick={(e) => {
-    if (status !== "live") {
-      e.preventDefault();
-    }
-  }}
-  className={`px-9 py-3 text-lg font-bold rounded-full transition-transform duration-300 z-10 shadow-md ${
-    status === "live"
-      ? "bg-green-500 text-white hover:bg-green-600 hover:scale-105 hover:shadow-lg active:translate-y-1 active:border-blue-500"
-      : "bg-gray-400 text-gray-200 border-gray-500 cursor-not-allowed"
-  }`}
->
-  Register Now
-</Link>
+        href={status === "live" ? "/register" : '/'}
+        onClick={(e) => {
+          if (status !== "live") {
+            e.preventDefault();
+          }
+        }}
+        className={`px-9 py-3 text-lg font-bold rounded-full transition-transform duration-300 z-10 shadow-md ${status === "live"
+            ? "bg-green-500 text-white hover:bg-green-600 hover:scale-105 hover:shadow-lg active:translate-y-1 active:border-blue-500"
+            : "bg-gray-400 text-gray-200 border-gray-500 cursor-not-allowed"
+          }`}
+      >
+        Register Now
+      </Link>
 
 
 
