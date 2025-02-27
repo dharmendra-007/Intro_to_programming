@@ -20,7 +20,7 @@ export default function Home() {
     // const startDate = new Date("2025-02-13T17:00:00Z").getTime();
     // const endDate = new Date("2025-02-27T23:59:59Z").getTime();
     const startDate = new Date(Date.UTC(2025, 1, 13, 11, 30, 0)).getTime(); // 17:00 IST (UTC+5:30)
-    const endDate = new Date(Date.UTC(2025, 1, 27, 18, 29, 59)).getTime(); // 23:59:59 IST (UTC+5:30)
+    const endDate = new Date(Date.UTC(2025, 2, 2, 18, 29, 59)).getTime(); // 23:59:59 IST (UTC+5:30)
 
     const interval = setInterval(() => {
       const now = new Date().getTime();
