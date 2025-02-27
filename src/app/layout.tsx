@@ -1,6 +1,6 @@
 export const metadata = {
-  title: "Introduction to Programming - Registration",
-  description: "Join our Introduction to Programming event. Check registration status and countdown until the event starts.",
+  title: "Induction 2.0",
+  description: "Induction program for second year students only.",
   icons: {
     icon: "/favicon_io/favicon.ico",
   },
