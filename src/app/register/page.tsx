@@ -75,16 +75,30 @@ const formSchema = z.object({
   primaryDomain: z.string().nonempty({ message: "Please select your primary domain." }),
   secondaryDomain: z.string().nonempty({ message: "Please select your secondary domain." }),
   githubUrl: z.string().regex(
-    /^https?:\/\/(www\.)?github\.com(\/[a-zA-Z0-9_-]+(\/[a-zA-Z0-9._-]+\/?)?)?\/?$/,
+    /^(https?:\/\/)?(www\.)?github\.com\/[a-zA-Z0-9_-]+(\/[a-zA-Z0-9._-]+\/?)?$/,
     { message: "Invalid GitHub URL." }
   ),
-  projectLink1: z.string().url({ message: "Invalid project link." }).optional().or(z.literal("")),
-  projectLink2: z.string().url({ message: "Invalid project link." }).optional().or(z.literal("")),
-  resumeLink: z.string().url({ message: "Invalid Url" }).optional().or(z.literal("")),
+
+  projectLink1: z.string().regex(
+    /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}\/?.*$/,
+    { message: "Invalid project link." }
+  ).optional().or(z.literal("")),
+
+  projectLink2: z.string().regex(
+    /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}\/?.*$/,
+    { message: "Invalid project link." }
+  ).optional().or(z.literal("")),
+
+  resumeLink: z.string().regex(
+    /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}\/?.*$/,
+    { message: "Invalid resume link." }
+  ).optional().or(z.literal("")),
+
 }).refine((data) => data.primaryDomain !== data.secondaryDomain, {
   message: "Primary and secondary domains must be different",
   path: ["secondaryDomain"],
 });
+
 
 type FormValues = z.infer<typeof formSchema>;
 
